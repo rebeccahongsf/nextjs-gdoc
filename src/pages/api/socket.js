@@ -12,7 +12,7 @@ export default function SocketHandler(req, res) {
 
   io.on("connection", (socket) => {
     socket.on("send-message", (message) => {
-      socket.broadcast.emit("receive-message", message);
+      socket.emit("receive-message", message);
     });
   });
 

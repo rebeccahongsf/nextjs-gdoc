@@ -1,29 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import io from 'socket.io-client';
 
-let socket;
-
-export const Chat = ({username}) => {
+export const Chat = ({ username }) => {
   const [message, setMessage] = useState('');
   const [allMessages, setAllMessages] = useState([]);
 
   useEffect(() => {
+    let socket;
+    async function socketInitializer() {
+      await fetch('/api/socket');
+
+      socket = io();
+
+      socket.on('receive-message', (data) => {
+        setAllMessages((history) => [...history, data]);
+      });
+    }
     socketInitializer();
-
-    // return () => {
-    //   socket.disconnect();
-    // };
   }, []);
-
-  async function socketInitializer() {
-    await fetch('/api/socket');
-
-    socket = io();
-
-    socket.on('receive-message', (data) => {
-      setAllMessages((history) => [...history, data]);
-    });
-  }
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -54,7 +48,6 @@ export const Chat = ({username}) => {
           value={message}
           onChange={(e) => setMessage(e.target.value)}
         />
-        <button type="button">Send</button>
       </form>
     </div>
   );
